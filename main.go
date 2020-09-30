@@ -91,23 +91,23 @@ func main() {
 	fmt.Println("----- Insert Many Using struct -----")
 	fmt.Println(res.InsertedID)
 
-	// Using bson.D
-	res, err = collection.InsertOne(context.Background(), bson.D{
-		{Key: "name", Value: "eric"},
-		{Key: "surname", Value: "cartman"},
-		{Key: "hobbies", Value: bson.A{"videogame", "alexa", "kfc"}},
-	})
-	fmt.Println("----- Insert One Using bson.D -----")
-	fmt.Println(res.InsertedID)
+	// // Using bson.D
+	// res, err = collection.InsertOne(context.Background(), bson.D{
+	// 	{Key: "name", Value: "eric"},
+	// 	{Key: "surname", Value: "cartman"},
+	// 	{Key: "hobbies", Value: bson.A{"videogame", "alexa", "kfc"}},
+	// })
+	// fmt.Println("----- Insert One Using bson.D -----")
+	// fmt.Println(res.InsertedID)
 
-	// Using bson.M
-	res, err = collection.InsertOne(context.Background(), bson.M{
-		"name":    "eric",
-		"surname": "cartman",
-		"hobbies": bson.A{"videogame", "alexa", "kfc"},
-	})
-	fmt.Println("----- Insert One Using bson.M -----")
-	fmt.Println(res.InsertedID)
+	// // Using bson.M
+	// res, err = collection.InsertOne(context.Background(), bson.M{
+	// 	"name":    "eric",
+	// 	"surname": "cartman",
+	// 	"hobbies": bson.A{"videogame", "alexa", "kfc"},
+	// })
+	// fmt.Println("----- Insert One Using bson.M -----")
+	// fmt.Println(res.InsertedID)
 
 	// Using bson.M
 	resMany, err := collection.InsertMany(context.Background(), []interface{}{iphone10, speaker})
@@ -180,6 +180,33 @@ func main() {
 		}
 		fmt.Println(findArray.Name)
 	}
+
+	// Update operator for Field
+	fmt.Println("----- Update Operator for field -----")
+	updateFieldCon := bson.M{"$set": bson.M{"isEssential": "false"}}
+	updateFieldRes, err := collection.UpdateMany(context.Background(), bson.M{}, updateFieldCon)
+	fmt.Println(updateFieldRes.ModifiedCount)
+
+	// Update operator for Array
+	fmt.Println("----- Update Operator for Array -----")
+	updateArrayCon := bson.M{"$addToSet": bson.M{"accessories": "manual"}}
+	updateArrayRes, err := collection.UpdateMany(context.Background(), arrayFilter, updateArrayCon)
+	fmt.Println(updateArrayRes.ModifiedCount)
+
+	// Update operator for field - multiple operators
+	fmt.Println("----- Update Operator for field multiple operators -----")
+	incCon := bson.M{
+		"$mul": bson.M{
+			"price": 1.20,
+		},
+	}
+	incRes, err := collection.UpdateMany(context.Background(), bson.M{}, incCon)
+	fmt.Println(incRes.MatchedCount)
+
+	// Delete operation
+	fmt.Println("----- Delete operation -----")
+	delRes, err := collection.DeleteMany(context.Background(), arrayFilter)
+	fmt.Println(delRes.DeletedCount)
 
 	if err != nil {
 		fmt.Println(err)
